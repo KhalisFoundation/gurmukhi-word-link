@@ -3,18 +3,22 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './components/landingPage';
 import GameScreen from './components/theGame';
+import { getWords } from './utils/database';
 
 const Stack = createStackNavigator();
 
 function App() {
   // example of how you would call it.
-  // React.useEffect(() => {
-  //   const words = async () => {
-  //     console.log(await getWords());
-  //   };
-  //   words();
-  // }, []);
-  return (
+  const [words, setWords] = React.useState([]);
+  React.useEffect(() => {
+    const loadWords = async () => {
+      setWords(await getWords());
+      // TODO loads the words into the state.
+    };
+    loadWords();
+  }, []);
+
+  return words ? (
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
@@ -29,7 +33,7 @@ function App() {
         />
       </Stack.Navigator>
     </NavigationContainer>
-  );
+  ) : null;
 }
 
 export default App;
