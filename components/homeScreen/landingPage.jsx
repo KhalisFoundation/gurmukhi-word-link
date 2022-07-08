@@ -5,26 +5,38 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
+  Linking,
   Image,
-  ImageBackground,
+  ImageBackground, 
+  SafeAreaView
 } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
-
+import { useDispatch, useSelector } from 'react-redux';
+import IonIcons from 'react-native-vector-icons/Ionicons';
+import MaskedView from '@react-native-community/masked-view';
+import { LinearGradient } from 'expo-linear-gradient';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import LoadingModal from './loadingScreen';
+import { useFonts } from 'expo-font';
+import AppLoading from 'expo-app-loading';
 import { setTheState } from '../../redux/actions';
+import LoadingModal from './loadingScreen';
 
 import { initialState } from '../../redux/reducers';
 
-import theColors from '../../util/colors';
-
 function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
+  // const state = useSelector((theState) => theState.theGameReducer);
+  const [fontLoaded] = useFonts({
+    Arial: require('../../assets/fonts/Arial.ttf'),
+    GurbaniHeavy: require('../../assets/fonts/GurbaniAkharHeavySG.ttf'),
+    Bookish: require('../../assets/fonts/Bookish.ttf'),
+    Mochy: require('../../assets/fonts/Mochy.ttf'),
+    Muli: require('../../assets/fonts/Muli.ttf'),
+    Nasa: require('../../assets/fonts/Nasalization.otf'),
+  });
   const state = useSelector((theState) => theState.theGameReducer);
-
   const [loadingScreenStatus, setLoadingScreen] = React.useState(true);
   const [loadingScreenText, setLoadingScreenText] = React.useState('Loading');
-
   let theState;
   React.useEffect(() => {
     async function getData() {
@@ -50,62 +62,45 @@ function HomeScreen({ navigation }) {
     }
     getData();
   }, [dispatch]);
-  // for styles
-  const colors = state ? theColors[state.darkMode] : theColors.false;
   // console.log(theColors[state.darkMode]);
   // console.log(state.darkMode);
   const styles = StyleSheet.create({
     container: {
       flex: 1,
       alignItems: 'center',
-      paddingTop: '5%',
-    },
-    mangal: {
-      fontSize: 20,
-      paddingTop: '3%',
+      flexDirection: 'column',
+      justifyContent: 'space-evenly',
+      backgroundColor: "#274C7C",
     },
     logo: {
-      width: '100%',
-      height: '70%',
+      height: '30%', alignSelf: 'center'
     },
     playTouchableOpacity: {
-      width: '50%',
-      height: '10%',
-      backgroundColor: colors.landingPage.playTouchableOpacity,
-      borderRadius: 10,
-      bottom: '23.5%',
+      height: '20%',
+      width: '100%',
     },
     play: {
-      width: '100%',
-      height: '100%',
+      fontSize: 70,
+      fontFamily: 'Nasa',
+      color: '#cdff',
+      textAlign: 'center',
+      textShadowOffset: {width: 2, height: 2},
+      textShadowRadius: 10,
+      textShadowColor: 'darkblue',
     },
     otherScreens: {
       flexDirection: 'row',
       // backgroundColor: "yellow",
-      bottom: '43.5%',
-      justifyContent: 'space-between',
+      alignItems: 'center',
+      justifyContent: 'space-evenly',
     },
     otherScreenTouchableOpacity: {
       flex: 1,
       margin: 10,
     },
-    otherScreensImg: {
-      height: 100,
-      width: 100,
-      borderRadius: 5,
-      alignItems: 'center',
-      backgroundColor: 'blue', // only here for the giveUp because no img
-    },
-    by: {
-      bottom: '18%',
-    },
-    byText: {
-      fontSize: 20,
-    },
     khalisTouchableOpacity: {
       height: '8%',
       width: '45%',
-      bottom: '17%',
     },
     khalis: {
       height: '100%',
@@ -113,26 +108,58 @@ function HomeScreen({ navigation }) {
       borderRadius: 5,
       alignItems: 'center',
     },
+    back: {
+      backgroundColor: '#035',
+      padding: 10,
+      borderRadius: 50,
+      alignSelf: 'flex-start',
+      margin: 0, marginTop: '5%'
+    },
+    bold: {
+      fontWeight: 'bold',
+      alignSelf: 'center',
+    },
   });
 
+  if (!fontLoaded) {
+    return <AppLoading />;
+  }
   return (
-    <ImageBackground
-      source={require('../../images/background.png')}
-      style={styles.container}
-    >
+    <SafeAreaView style={styles.container}>
       <LoadingModal visible={loadingScreenStatus} theText={loadingScreenText} />
-
-      <Text style={styles.mangal}>ੴਸਤਿਗੁਰਪ੍ਰਸਾਦਿ॥</Text>
-      <Image style={styles.logo} source={require('../../images/logo.png')} />
+      <TouchableOpacity
+        style={styles.back}
+        onPress={() => navigation.goBack()}
+      >
+      <MaskedView
+          style={{ width: 35, height: 35 }}
+          maskElement={(
+            <View
+              style={{
+                backgroundColor: 'transparent',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <IonIcons name="arrow-back" size={35} color={state.darkMode ? '#fff' : '#464646'} style={styles.shadow} />
+            </View>
+        )}
+        >
+          <LinearGradient
+            colors={['#ff8008', '#ffc837']}
+            style={{ flex: 1 }}
+          />
+        </MaskedView>
+      </TouchableOpacity>  
+      <Image style={styles.logo} source={require('../../assets/logo.png')} resizeMode="contain" />
       <TouchableOpacity
         style={styles.playTouchableOpacity}
         onPress={() => {
           navigation.navigate('play');
         }}
       >
-        <Image style={styles.play} source={require('../../images/Play.png')} />
+        <Text style={styles.play}>Play</Text>
       </TouchableOpacity>
-
       <View style={styles.otherScreens}>
         <TouchableOpacity
           style={styles.otherScreenTouchableOpacity}
@@ -140,11 +167,8 @@ function HomeScreen({ navigation }) {
             navigation.navigate('settings');
           }}
         >
-          <Image
-            style={styles.otherScreensImg}
-            source={require('../../images/settings.png')}
-          />
-          <Text>SETTINGS</Text>
+          <Icon name="cog" size={85} color="#aaa" style={styles.bold} />
+          <Text style={{ ...styles.bold, fontFamily: 'Muli', fontWeight: 'normal', color: 'white' }}>Settings</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -153,11 +177,8 @@ function HomeScreen({ navigation }) {
             navigation.navigate('correctWords'); // how to pass params to other screen. We probaly won't need but there just for refrence
           }}
         >
-          <Image
-            style={styles.otherScreensImg}
-            source={require('../../images/levels.png')}
-          />
-          <Text>Words Done</Text>
+          <Icon name="check-circle" size={85} color="#00aa00" style={styles.bold} />
+          <Text style={{ ...styles.bold, fontFamily: 'Muli', fontWeight: 'normal', color: 'white', textAlign:'center' }}>Completed Levels</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.otherScreenTouchableOpacity}
@@ -165,28 +186,22 @@ function HomeScreen({ navigation }) {
             navigation.navigate('giveUps'); // how to pass params to other screen. We probaly won't need but there just for refrence
           }}
         >
-          <View style={styles.otherScreensImg}>
-            <Text>Give Up</Text>
-          </View>
-          <Text>Get Give Ups</Text>
-        </TouchableOpacity>
-      </View>
 
-      <View style={styles.by}>
-        <Text style={styles.byText}>ਪ੍ਰਕਾਸ਼ਕ:</Text>
+          <Icon name="heart" size={85} color="#f00" style={styles.bold} />
+          <Text style={{ ...styles.bold, fontFamily: 'Muli', fontWeight: 'normal', color: 'white' }}>Get Lives</Text>
+        </TouchableOpacity>
       </View>
       <TouchableOpacity
         style={styles.khalisTouchableOpacity}
-        onPress={() => {
-          console.log('Khalis Foundation');
-        }}
+        onPress={() => Linking.openURL('https://khalisfoundation.org')}
       >
         <Image
-          style={styles.khalis}
-          source={require('../../images/khalislogo150.png')}
+          source={require('../../assets/khalislogo150white.png')}
+          style={{ width: 150, alignSelf: 'center' }}
+          resizeMode="contain"
         />
       </TouchableOpacity>
-    </ImageBackground>
+    </SafeAreaView>
   );
 }
 

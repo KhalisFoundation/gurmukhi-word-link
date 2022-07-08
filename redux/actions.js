@@ -3,9 +3,21 @@ export const setTopWord = () => (dispatch) => {
     type: "SET_TOP_WORD",
   });
 };
+export const setTopHint = (hint) => (dispatch) => {
+  dispatch({
+    type: "SET_TOP_HINT",
+    theTopHint: hint,
+  });
+};
 export const setBottomWord = () => (dispatch) => {
   dispatch({
-    type: "SET_BOTTOM_WORD",
+    type: "SET_BOTTOM_WORD"
+  });
+};
+export const setBottomHint = (hint) => (dispatch) => {
+  dispatch({
+    type: "SET_BOTTOM_HINT",
+    theBottomHint: hint,
   });
 };
 export const setAttempt = (word) => (dispatch) => {
@@ -43,9 +55,10 @@ export const setTheState = (state) => (dispatch) => {
     state,
   });
 };
-export const setGiveUpLives = () => (dispatch) => {
+export const setGiveUpLives = (operator) => (dispatch) => {
   dispatch({
     type: "SET_GIVE_UP_LIVES",
+    addOrSub: operator,
   });
 };
 export const closeNextLevelModal = () => (dispatch) => {
@@ -53,7 +66,6 @@ export const closeNextLevelModal = () => (dispatch) => {
     type: "CLOSE_NEXT_LEVEL_MODAL",
   });
 };
-
 //settings page
 export const setTypeOfWords = (theType) => (dispatch) => {
   dispatch({
@@ -71,5 +83,28 @@ export const setShowPopUp = (set) => (dispatch) => {
   dispatch({
     type: "SET_SHOW_POP_UP",
     onOrOff: set,
+  });
+};
+export const setShowNumOfLetters = (set) => (dispatch) => {
+  dispatch({
+    type: "SET_SHOW_NUM_OF_LETTERS",
+    onOrOff: set,
+  });
+};
+export const setIncludeMatra = (set) => (dispatch) => {
+  dispatch({
+    type: "SET_INCLUDE_MATRA",
+    onOrOff: set,
+  });
+};
+export const setShowRomanised = (set) => (dispatch) => {
+  dispatch({
+    type: "SET_SHOW_ROMANISED",
+    onOrOff: set,
+  });
+};
+export const reset = () => (dispatch) => {
+  dispatch({
+    type: "RESET_LEVELS",
   });
 };

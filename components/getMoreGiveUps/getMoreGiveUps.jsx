@@ -5,89 +5,162 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Image,
+  StatusBar,
   TextInput,
+  Animated,
+  Platform
 } from 'react-native';
+import { Header } from 'react-native-elements';
 import { useSelector, useDispatch } from 'react-redux';
-
-import * as anvaad from 'anvaad-js';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import IconM from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaskedView from '@react-native-community/masked-view';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useFonts } from 'expo-font';
+import AppLoading from 'expo-app-loading';
+import GLOBAL from '../../util/globals';
 import { setGiveUpLives } from '../../redux/actions';
-
 import theColors from '../../util/colors';
 
-function MoreGiveUps({ navigation }) {
-  const state = useSelector((theState) => theState.theGameReducer);
+function MoreGiveUps({ route, navigation }) {
   const dispatch = useDispatch();
-
+  const state = useSelector((theState) => theState.theGameReducer);
+  const [fontsLoaded] = useFonts({
+    Arial: require('../../assets/fonts/Arial.ttf'),
+    GurbaniHeavy: require('../../assets/fonts/GurbaniAkharHeavySG.ttf'),
+    Bookish: require('../../assets/fonts/Bookish.ttf'),
+    Mochy: require('../../assets/fonts/Mochy.ttf'),
+    Muli: require('../../assets/fonts/Muli.ttf'),
+    Nasa: require('../../assets/fonts/Nasalization.otf'),
+  });
+  const prevScreen = route.params.prevScreen === 0 ? 'Home' : 'play';
   const colors = theColors[state.darkMode];
   const styles = StyleSheet.create({
     container: {
-      flex: 1,
       alignItems: 'center',
       backgroundColor: colors.getMoreGiveUps.container,
-      width: '100%',
       height: '100%',
-      paddingTop: '10%',
-    },
-    header: {
-      flexDirection: 'row',
-    },
-    backButton: {
-      flex: 1,
-    },
-    backArrow: {
-      width: 50,
-      height: 50,
-    },
-    title: {
-      fontSize: 30,
-      flex: 3,
-      right: 20,
-    },
-    giveUpLivesText: {
-      backgroundColor: colors.getMoreGiveUps.giveUpLivesText,
-      fontSize: 20,
-      borderRadius: 100,
+      width: '100%',
+      marginTop: '3.5%',
     },
     instructionsText: {
-      backgroundColor: colors.getMoreGiveUps.instructionsText,
-      fontSize: 25,
+      fontFamily: 'Muli',
+      backgroundColor: 'white',
+      borderRadius: 5,
+      borderColor: 'black',
+      borderWidth: 1,
+      marginHorizontal: 5,
+      fontSize: 18,
+      padding: 5,
       textAlign: 'center',
+      marginVertical: 5,
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+    },
+    infoText: {
+      fontFamily: 'Muli',
+      marginHorizontal: 5,
+      fontSize: 15,
+      color: state.darkMode ? '#fff' : '#000',
+      padding: 5,
+      textAlign: 'center',
+      marginVertical: 5,
+    },
+    DHANcover: {
+      height: 70,
+      width: '100%',
+      elevation: 5,
+      justifyContent: 'center',
+      backgroundColor: state.darkMode ? '#000' : '#fff',
+      borderRadius: 20,
     },
     DHAN: {
-      padding: 20,
+      height: 100,
+      textAlign: 'center',
+      padding: 5,
       fontSize: 30,
-      backgroundColor: 'blue',
+      textShadowRadius: 10,
+      fontFamily: 'Bookish'
     },
     inputBox: {
-      padding: 20,
-    },
-    textInputGurmukhi: {
-      fontSize: 25,
-      backgroundColor: colors.getMoreGiveUps.textInputGurmukhi,
+      padding: 10,
+      width: '100%',
     },
     textInput: {
-      margin: 20,
+      marginTop: 10,
+      marginBottom: 5,
+      marginHorizontal: 10,
       fontSize: 15,
       backgroundColor: colors.getMoreGiveUps.textInput,
+      borderRadius: 20,
+      padding: 15,
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
     },
     submitButton: {
-      backgroundColor: colors.getMoreGiveUps.submitButton,
+      alignItems: 'center',
+      borderRadius: 15,
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
     },
+    submit: {
+      fontFamily: 'Nasa',
+      fontSize: 16,
+      alignSelf: 'center',
+      padding: 10,
+      color: state.darkMode ? 'black' : 'white',
+    },
+    upBox: {
+      backgroundColor: '#072227',
+      flexDirection: 'row',
+      height: 40,
+      width: 100,
+      alignItems: 'center',
+      borderRadius: 30,
+      margin: 10,
+      elevation: 5,
+      justifyContent: 'space-between',
+      paddingHorizontal: 10
+    },
+    upText: {
+      color: 'white',
+      fontSize: 15,
+      fontWeight: 'bold'
+    }
   });
+  const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
   const wordsToType = [
-    'vwhigurU',
+    'vwihgurU',
     'DMn gurU nwnk dyv swihb jI',
-    'DMn gurU AMgd swihb jI',
-    'DMn gurU Amr dws swihb jI',
-    'DMn gurU rwm dws swihb jI',
-    'DMn gurU ArjMn dyv swihb jI',
+    'DMn gurU AMgd dyv swihb jI',
+    'DMn gurU Amrdws swihb jI',
+    'DMn gurU rwmdws swihb jI',
+    'DMn gurU Arjn dyv swihb jI',
     'DMn gurU hrgoibMd swihb jI',
     'DMn gurU hrrwie swihb jI',
     'DMn gurU hrikRSn swihb jI',
-    'DMn gurU qygbhwdr swihb jI',
+    'DMn gurU qyg bhwdr swihb jI',
     'DMn gurU goibMd isMG swihb jI',
+    'DMn SRI gurU gRMQ swihb jI',
     'DMn gurU DMn gurU ipAwry',
   ];
   const getRandomWord = () => {
@@ -95,59 +168,121 @@ function MoreGiveUps({ navigation }) {
   };
   const [textEntry, setTextEntry] = React.useState('');
   const [theWord, setWord] = React.useState(getRandomWord());
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          title="Home"
-          onPress={() => {
-            navigation.navigate('Home');
-          }}
-        >
-          <Image
-            source={require('../../images/left_arrow.png')}
-            style={styles.backArrow}
+      <StatusBar
+        backgroundColor="black"
+        barStyle="light-content"
+      />
+      <Header
+        backgroundColor={
+            GLOBAL.COLOR.TOOLBAR_COLOR_ALT
+          }
+        containerStyle={Platform.OS === 'android' && { height: 75, paddingTop: 0 }}
+        leftComponent={(
+          <Icon
+            name="arrow-back"
+            color="black"
+            size={30}
+            onPress={() => { navigation.navigate(prevScreen); }}
           />
-        </TouchableOpacity>
-        <Text style={styles.title}>Get More Give Ups</Text>
+          )}
+        centerComponent={{
+          text: 'Get More Lives',
+          style: {
+            color: 'black',
+            fontSize: 20,
+            fontFamily: 'Muli',
+            margin:0,
+          }
+        }}
+      />
+      <View
+        style={styles.upBox}
+      >
+        <IconM
+          name="lightbulb-on"
+          size={25}
+          color="orange"
+        />
+        <Text style={[styles.upText, { color: 'cyan' }]}>{state.giveUpsLeft}</Text>
       </View>
-      <Text style={styles.giveUpLivesText}>
-        Give Up Lives:
-        {' '}
-        {state.giveUpsLeft}
-      </Text>
       <Text style={styles.instructionsText}>
-        Try to type the following to get more Give Lives. You will have to
-        figure out which english letters correspond to the respective Gurmukhi
-        characters
+        Try to type the following to get more Lives.
       </Text>
-      <Text style={styles.DHAN}>{anvaad.unicode(theWord)}</Text>
+      <Text style={[{ fontSize: 10 }, styles.infoText]}>
+        {'{'}
+        You will have to figure out which english letters correspond to the
+        respective Gurmukhi characters
+        {'}'}
+      </Text>
+      <View style={styles.DHANcover}>
+        <MaskedView
+          style={{ height: 50, width: '100%' }}
+          maskElement={(
+            <View
+              style={{
+                backgroundColor: 'transparent',
+              }}
+            >
+              <Text style={styles.DHAN}>{theWord}</Text>
+            </View>
+          )}
+        >
+          <LinearGradient
+            colors={state.darkMode ? ['#ff8008', '#ffc837'] : ['#FF0076', '#590FB7']}
+            style={{ flex: 1 }}
+          />
+        </MaskedView>
+      </View>
       <View style={styles.inputBox}>
-        <Text style={styles.textInputGurmukhi}>
-          {anvaad.unicode(textEntry)}
-        </Text>
+        <View style={{ ...styles.DHANcover, backgroundColor: state.darkMode ? '#fff' : '#000' }}>
+          <MaskedView
+            style={{ height: 50, width: '100%' }}
+            maskElement={(
+              <View
+                style={{
+                  backgroundColor: 'transparent',
+                }}
+              >
+                <Text
+                  style={{ ...styles.DHAN, fontFamily: 'GurbaniHeavy' }}
+                >
+                  {textEntry}
+                </Text>
+              </View>
+          )}
+          >
+            <LinearGradient
+              colors={state.darkMode ? ['#FF0076', '#590FB7'] : ['#ff8008', '#ffc837']}
+              style={{ flex: 1 }}
+            />
+          </MaskedView>
+        </View>
         <TextInput
-          style={styles.textInput}
+          style={{ ...styles.textInput, fontFamily: 'Muli' }}
           placeholder="type here"
-          value={textEntry}
-          onChangeText={(text) => {
-            setTextEntry(text);
-          }}
+          onChangeText={(newText) => { setTextEntry(newText); }}
+          defaultValue={textEntry}
         />
       </View>
       <TouchableOpacity
         style={styles.submitButton}
         onPress={() => {
           if (textEntry === theWord) {
-            console.log('GOood job');
-            dispatch(setGiveUpLives());
+            console.log('Good job');
+            dispatch(setGiveUpLives('+'));
             setWord(getRandomWord());
             setTextEntry('');
           }
         }}
       >
-        <Text>SUBMIT</Text>
+        <AnimatedLinearGradient colors={state.darkMode ? ['#ff8008', '#ffc837'] : ['#FF0076', '#590FB7']} style={styles.submitButton}>
+          <Text style={{ ...styles.submit, fontFamily: 'Nasa' }}>Submit</Text>
+        </AnimatedLinearGradient>
       </TouchableOpacity>
     </View>
   );

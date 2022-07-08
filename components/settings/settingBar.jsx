@@ -1,57 +1,41 @@
 /* eslint-disable react-native/no-color-literals */
 import * as React from 'react';
 import {
-  View, Text, TouchableOpacity, StyleSheet, Image
+  View, StyleSheet
 } from 'react-native';
-import { ListItem, BottomSheet, Icon } from 'react-native-elements';
+import {
+  ListItem, BottomSheet
+} from 'react-native-elements';
 import { useSelector, useDispatch } from 'react-redux';
-
-import theColors from '../../util/colors';
+import MaskedView from '@react-native-community/masked-view';
+import { LinearGradient } from 'expo-linear-gradient';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 function SettingsBar({
   theSetting,
   imageSource,
   theList,
   theAction,
-  theCurrentOptionIndex,
 }) {
   const dispatch = useDispatch();
 
   const state = useSelector((theState) => theState.theGameReducer);
-  const colors = theColors[state.darkMode];
   const styles = StyleSheet.create({
-    container: {
-      height: 50,
+    titleText: {
+      color: 'black'
     },
-    settingBar: {
-      flexDirection: 'row',
-      width: '100%',
-      height: '99%',
-      backgroundColor: colors.settingBar.settingBar,
-    },
-    image: {
-      // flex: 1,
-      width: '30%',
-      height: '100%',
-    },
-    text1: {
-      flex: 1,
-    },
-    rightSide: {
-      flex: 1,
-      flexDirection: 'row',
-    },
-    text2: {
-      // flex: 1,
-    },
-    icon: {
-      // flex: 1,
+    shadow: {
+      shadowColor: 'black',
+      shadowOpacity: 0.5,
+      shadowRadius: 5,
+      shadowOffset: {
+        width: 0,
+        height: 1,
+      },
     },
   });
   const allImages = {
-    khalislogo150: require('../../images/khalislogo150.png'),
-    khanda: require('../../images/khanda.png'),
-    ikOngkar: require('../../images/ikOngkar.png'),
+    reload: 'reload'
   };
   const list = theList.map((theTitle) => {
     return {
@@ -72,29 +56,52 @@ function SettingsBar({
   });
   const [isVisible, setIsVisible] = React.useState(false);
   const [currentSetting, setCurrentSetting] = React.useState(
-    String(list[theCurrentOptionIndex].title)
+    'Wanna reset the game?'
   );
   // dispatch(theAction(currentSetting));
   // why does this cause it it craxh
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.settingBar}
+      <ListItem
+        key={theSetting}
+        containerStyle={[
+          styles.titleText,
+          state.darkMode && { backgroundColor: '#464646' },
+          { alignItems: 'flex-start' }
+        ]}
         onPress={() => {
           setIsVisible((prev) => {
             // sets isVisible to true
             return !prev;
           });
         }}
+        bottomDivider
       >
-        <Image style={styles.image} source={allImages[imageSource]} />
-        <Text style={styles.text1}>{theSetting}</Text>
-
-        <View style={styles.rightSide}>
-          <Text style={styles.text2}>{currentSetting}</Text>
-          <Icon name="chevron-right" style={styles.icon} />
-        </View>
-      </TouchableOpacity>
+        <MaskedView
+          style={{ width: 35, height: 35 }}
+          maskElement={(
+            <View
+              style={{
+                backgroundColor: 'transparent',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <Icon name={allImages[imageSource]} size={35} color={state.darkMode ? '#fff' : '#464646'} style={styles.shadow} />
+            </View>
+          )}
+        >
+          <LinearGradient
+            colors={state.darkMode ? ['#ff8008', '#ffc837'] : ['#FF0076', '#590FB7']}
+            style={{ flex: 1 }}
+          />
+        </MaskedView>
+        <ListItem.Content>
+          <ListItem.Title style={state.darkMode && { color: '#fff' }}>{theSetting}</ListItem.Title>
+          <ListItem.Subtitle style={{ color: state.darkMode ? '#fff' : '#a3a3a3' }}>{currentSetting}</ListItem.Subtitle>
+        </ListItem.Content>
+        <ListItem.Chevron color={state.darkMode ? 'white' : 'black'} />
+      </ListItem>
 
       <BottomSheet
         modalProps={{

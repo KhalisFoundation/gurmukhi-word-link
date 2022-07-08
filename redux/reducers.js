@@ -3,6 +3,7 @@ import getWords from "../util/generateWords";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+
 const setData = async (title, state) => {
   try {
     await AsyncStorage.setItem(title, JSON.stringify(state));
@@ -17,6 +18,7 @@ const setWords = (level, allWords) => {
   const [charArray, firstWord, secondWord] = getWords(level, allWords);
   return [charArray, firstWord, secondWord];
 };
+
 //puts words for level 1
 const generateWords = getWords(allWords.filter((word) => word.level === 1));
 
@@ -24,11 +26,15 @@ export const initialState = {
   ALL_WORDS: allWords, //this list will not be changed
   usableWords: allWords.filter((word) => word.level === 1),
   topWord: "",
+  topHint: "",
   bottomWord: "",
+  bottomHint: "",
   attempt: "",
   charArray: generateWords[0],
   firstWord: generateWords[1],
+  firstLength: parseInt(generateWords[1].engText.length),
   secondWord: generateWords[2],
+  secondLength: parseInt(generateWords[2].engText.length),
   correctWords: [],
   givenUpWords: [],
   giveUpsLeft: 100,
@@ -42,31 +48,23 @@ export const initialState = {
     { level: 6, wordsNeeded: 10, pointsPerWord: 10 },
     { level: 7, wordsNeeded: 10, pointsPerWord: 11 },
     { level: 8, wordsNeeded: 10, pointsPerWord: 12 },
-    { level: 9, wordsNeeded: 10, pointsPerWord: 13 },
-    { level: 10, wordsNeeded: 10, pointsPerWord: 14 },
-    { level: 11, wordsNeeded: 10, pointsPerWord: 15 },
-    { level: 12, wordsNeeded: 10, pointsPerWord: 16 },
-    { level: 13, wordsNeeded: 10, pointsPerWord: 17 },
-    { level: 14, wordsNeeded: 10, pointsPerWord: 18 },
-    { level: 15, wordsNeeded: 10, pointsPerWord: 19 },
-    { level: 16, wordsNeeded: 10, pointsPerWord: 21 },
-    { level: 17, wordsNeeded: 10, pointsPerWord: 22 },
-    { level: 18, wordsNeeded: 10, pointsPerWord: 23 },
-    { level: 19, wordsNeeded: 10, pointsPerWord: 24 },
-    { level: 20, wordsNeeded: 10, pointsPerWord: 25 },
-    { level: 21, wordsNeeded: 10, pointsPerWord: 26 },
-    { level: 22, wordsNeeded: 10, pointsPerWord: 27 },
+    // { level: 9, wordsNeeded: 10, pointsPerWord: 13 },
   ],
   totalPoints: 0,
   //settings stuff
   typesOfWords: "Both",
   darkMode: false,
   showPopUp: true,
+  romanised: false,
+  showNumOfLetters: false,
+  includeMatra: true
 };
 
-// setData("state", initialState); //to reset all state
+//to reset all state
+//setData("state", initialState);
 
 function theGameReducer(state = initialState, action) {
+  const finalLevel = 8 // was 9
   if (action.type === "SET_TOP_WORD") {
     return {
       ...state,
@@ -74,10 +72,24 @@ function theGameReducer(state = initialState, action) {
       attempt: "",
     };
   }
+  if (action.type === "SET_TOP_HINT") {
+    return {
+      ...state,
+      topHint: action.theTopHint,
+      attempt: "",
+    };
+  }
   if (action.type === "SET_BOTTOM_WORD") {
     return {
       ...state,
       bottomWord: state.secondWord.engText,
+      attempt: "",
+    };
+  }
+  if (action.type === "SET_BOTTOM_HINT") {
+    return {
+      ...state,
+      bottomHint: action.theBottomHint,
       attempt: "",
     };
   }
@@ -122,7 +134,6 @@ function theGameReducer(state = initialState, action) {
     const newState = {
       ...state,
       givenUpWords: wordsLst,
-      giveUpsLeft: state.giveUpsLeft - 1,
     };
     // setData("state", newState);
     return newState;
@@ -156,8 +167,10 @@ function theGameReducer(state = initialState, action) {
     if (newUsableWords.length > 3) {
       newGiveUpWords = [...state.givenUpWords];
     } else {
+      let giveUp = state.givenUpWords
       newGiveUpWords = state.givenUpWords.map((word) => {
         if (word.level === state.levelProgress[0].level) {
+          newGiveUpWords = allWordsForCurrentLevel.filter((word)=> !word)
           newUsableWords.push(word);
         } else {
           return word;
@@ -170,11 +183,15 @@ function theGameReducer(state = initialState, action) {
       ...state,
       nextLevelModal: [state.showPopUp, state.firstWord, state.secondWord],
       topWord: "",
+      topHint: "",
       bottomWord: "",
+      bottomHint: "",
       attempt: "",
       charArray: generateWords[0],
       firstWord: generateWords[1],
       secondWord: generateWords[2],
+      firstLength: parseInt(generateWords[1].engText.length),
+      secondLength: generateWords[2].engText.length,
       givenUpWords: newGiveUpWords,
       usableWords: newUsableWords,
       typesOfWords: newWordType,
@@ -203,7 +220,9 @@ function theGameReducer(state = initialState, action) {
       wordsNeeded: newWordssNeeded,
     };
     if (newWordssNeeded === 0) {
+      if(theLevelProgress[0].level!=finalLevel){
       theLevelProgress = theLevelProgress.slice(1);
+      }
     }
 
     return {
@@ -235,9 +254,15 @@ function theGameReducer(state = initialState, action) {
     return newState;
   }
   if (action.type === "SET_GIVE_UP_LIVES") {
+    var lives = '';
+    if (action.addOrSub === '+') {
+      lives = state.giveUpsLeft + 1;
+    } else if (action.addOrSub === '-') {
+      lives = state.giveUpsLeft - 1;
+    }
     const newState = {
       ...state,
-      giveUpsLeft: state.giveUpsLeft + 1,
+      giveUpsLeft: lives,
     };
     setData("state", newState);
     return newState;
@@ -249,6 +274,34 @@ function theGameReducer(state = initialState, action) {
     };
     setData("state", newState);
     return newState;
+  }
+  if (action.type === "SET_SHOW_NUM_OF_LETTERS") {
+    const newState = {
+      ...state,
+      showNumOfLetters: action.onOrOff,
+    };
+    setData("state", newState);
+    return newState;
+  }
+  if (action.type === "SET_INCLUDE_MATRA") {
+    const newState = {
+      ...state,
+      includeMatra: action.onOrOff,
+    };
+    setData("state", newState);
+    return newState;
+  }
+  if (action.type === "SET_SHOW_ROMANISED") {
+    const newState = {
+      ...state,
+      romanised: action.onOrOff,
+    };
+    setData("state", newState);
+    return newState;
+  }
+  if (action.type === "RESET_LEVELS") {
+    setData("state", initialState);
+    return initialState
   }
 
   //default

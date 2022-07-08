@@ -3,9 +3,12 @@ import * as Anvaad from 'anvaad-js';
 import * as React from 'react';
 
 import {
-  View, Text, StyleSheet, TouchableOpacity
+  Text, StyleSheet, TouchableOpacity, Animated, View, Dimensions
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
+import IconM from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaskedView from '@react-native-community/masked-view';
+import { LinearGradient } from 'expo-linear-gradient';
 import {
   setAttempt,
   setBottomWord,
@@ -15,909 +18,56 @@ import {
   setNewWords,
 } from '../../redux/actions';
 
-import theColors from '../../util/colors';
-
 function TheCircle() {
   // there can only be from 2-18 characters as input
   const state = useSelector((theState) => theState.theGameReducer);
   const dispatch = useDispatch();
-  const colors = theColors[state.darkMode];
+  const screenWidth = Dimensions.get('window').width;
+  const screenHeight = Dimensions.get('window').height;
+  function gurmukhi(text) {
+    if (state.romanised) {
+      return Anvaad.translit(text);
+    }
+    return Anvaad.unicode(text);
 
-  const commonChar = {
-    width: '10%',
-    height: '10%',
-    backgroundColor: colors.circleForGame.commanChar,
-    borderRadius: 10,
-  };
-
-  const commonStyles = StyleSheet.create({
-    lettersCircle: {
-      width: '85%',
-      height: '45%',
-      borderRadius: 200,
-      backgroundColor: colors.circleForGame.lettersCircle,
-    },
-    characterText: {
-      bottom: '15%',
-      fontSize: 25,
-      textAlign: 'center',
-    },
-    character1: {
-      ...commonChar,
-      left: '45%',
-      top: '0%',
-    },
-    character2: {
-      ...commonChar,
-      left: '45%',
-      top: '80%',
-    },
-  });
-
-  const threeCharStyles = StyleSheet.create({
-    ...commonStyles,
-    character3: {
-      ...commonChar,
-      left: '85%',
-      top: '25%',
-    },
-  });
-  const fourCharStyles = StyleSheet.create({
-    ...commonStyles,
-    character3: {
-      ...commonChar,
-      left: '85%',
-      top: '25%',
-    },
-    character4: {
-      ...commonChar,
-      left: '5%',
-      top: '15%',
-    },
-  });
-
-  const fiveCharStyles = StyleSheet.create({
-    ...commonStyles,
-    character3: {
-      ...commonChar,
-      left: '80%',
-      top: '0%',
-    },
-    character4: {
-      ...commonChar,
-      left: '15%',
-      top: '35%',
-    },
-    character5: {
-      ...commonChar,
-      left: '15%',
-      top: '-20%',
-    },
-    characterText: {
-      bottom: '15%',
-      fontSize: 35,
-      textAlign: 'center',
-    },
-  });
-
-  const sixCharStyles = StyleSheet.create({
-    ...commonStyles,
-    character3: {
-      ...commonChar,
-      left: '80%',
-      top: '0%',
-    },
-    character4: {
-      ...commonChar,
-      left: '15%',
-      top: '35%',
-    },
-    character5: {
-      ...commonChar,
-      left: '15%',
-      top: '-20%',
-    },
-    character6: {
-      ...commonChar,
-      left: '80%',
-      top: '15%',
-    },
-    characterText: {
-      bottom: '15%',
-      fontSize: 35,
-      textAlign: 'center',
-    },
-  });
-
-  const sevenCharStyles = StyleSheet.create({
-    ...commonStyles,
-    character3: {
-      ...commonChar,
-      left: '80%',
-      top: '0%',
-    },
-    character4: {
-      ...commonChar,
-      left: '15%',
-      top: '35%',
-    },
-    character5: {
-      ...commonChar,
-      left: '15%',
-      top: '-20%',
-    },
-    character6: {
-      ...commonChar,
-      left: '80%',
-      top: '15%',
-    },
-    character7: {
-      ...commonChar,
-      left: '80%',
-      top: '-16%',
-    },
-  });
-
-  const eightCharStyles = StyleSheet.create({
-    ...commonStyles,
-    character3: {
-      ...commonChar,
-      left: '80%',
-      top: '0%',
-    },
-    character4: {
-      ...commonChar,
-      left: '15%',
-      top: '35%',
-    },
-    character5: {
-      ...commonChar,
-      left: '15%',
-      top: '-20%',
-    },
-    character6: {
-      ...commonChar,
-      left: '80%',
-      top: '15%',
-    },
-    character7: {
-      ...commonChar,
-      left: '80%',
-      top: '-16%',
-    },
-    character8: {
-      ...commonChar,
-      left: '5%',
-      top: '-25%',
-    },
-  });
-
-  const nineCharStyles = StyleSheet.create({
-    ...commonStyles,
-    character3: {
-      ...commonChar,
-      left: '65%',
-      top: '-15%',
-    },
-    character4: {
-      ...commonChar,
-      left: '10%',
-      top: '40%',
-    },
-    character5: {
-      ...commonChar,
-      left: '25%',
-      top: '-35%',
-    },
-    character6: {
-      ...commonChar,
-      left: '80%',
-      top: '20%',
-    },
-    character7: {
-      ...commonChar,
-      left: '80%',
-      top: '-40%',
-    },
-    character8: {
-      ...commonChar,
-      left: '10%',
-      top: '-50%',
-    },
-    character9: {
-      ...commonChar,
-      left: '65%',
-      top: '5%',
-    },
-  });
-
-  const tenCharStyles = StyleSheet.create({
-    ...commonStyles,
-    character3: {
-      ...commonChar,
-      left: '65%',
-      top: '-15%',
-    },
-    character4: {
-      ...commonChar,
-      left: '10%',
-      top: '40%',
-    },
-    character5: {
-      ...commonChar,
-      left: '25%',
-      top: '-35%',
-    },
-    character6: {
-      ...commonChar,
-      left: '80%',
-      top: '20%',
-    },
-    character7: {
-      ...commonChar,
-      left: '80%',
-      top: '-40%',
-    },
-    character8: {
-      ...commonChar,
-      left: '10%',
-      top: '-50%',
-    },
-    character9: {
-      ...commonChar,
-      left: '65%',
-      top: '5%',
-    },
-    character10: {
-      ...commonChar,
-      left: '25%',
-      top: '-5%',
-    },
-  });
-
-  const elevenCharStyles = StyleSheet.create({
-    ...commonStyles,
-    character3: {
-      ...commonChar,
-      left: '65%',
-      top: '-15%',
-    },
-    character4: {
-      ...commonChar,
-      left: '10%',
-      top: '40%',
-    },
-    character5: {
-      ...commonChar,
-      left: '25%',
-      top: '-35%',
-    },
-    character6: {
-      ...commonChar,
-      left: '80%',
-      top: '20%',
-    },
-    character7: {
-      ...commonChar,
-      left: '80%',
-      top: '-40%',
-    },
-    character8: {
-      ...commonChar,
-      left: '10%',
-      top: '-50%',
-    },
-    character9: {
-      ...commonChar,
-      left: '65%',
-      top: '5%',
-    },
-    character10: {
-      ...commonChar,
-      left: '25%',
-      top: '-5%',
-    },
-    character11: {
-      ...commonChar,
-      left: '0%',
-      top: '-55%',
-    },
-  });
-
-  const twelveCharStyles = StyleSheet.create({
-    ...commonStyles,
-    character3: {
-      ...commonChar,
-      left: '65%',
-      top: '-15%',
-    },
-    character4: {
-      ...commonChar,
-      left: '10%',
-      top: '40%',
-    },
-    character5: {
-      ...commonChar,
-      left: '25%',
-      top: '-35%',
-    },
-    character6: {
-      ...commonChar,
-      left: '80%',
-      top: '20%',
-    },
-    character7: {
-      ...commonChar,
-      left: '80%',
-      top: '-40%',
-    },
-    character8: {
-      ...commonChar,
-      left: '10%',
-      top: '-50%',
-    },
-    character9: {
-      ...commonChar,
-      left: '65%',
-      top: '5%',
-    },
-    character10: {
-      ...commonChar,
-      left: '25%',
-      top: '-5%',
-    },
-    character11: {
-      ...commonChar,
-      left: '0%',
-      top: '-55%',
-    },
-    character12: {
-      ...commonChar,
-      left: '90%',
-      top: '-65%',
-    },
-  });
-
-  const thirteenCharStyles = StyleSheet.create({
-    ...commonStyles,
-    character3: {
-      ...commonChar,
-      left: '65%',
-      top: '-15%',
-    },
-    character4: {
-      ...commonChar,
-      left: '10%',
-      top: '40%',
-    },
-    character5: {
-      ...commonChar,
-      left: '25%',
-      top: '-35%',
-    },
-    character6: {
-      ...commonChar,
-      left: '80%',
-      top: '20%',
-    },
-    character7: {
-      ...commonChar,
-      left: '80%',
-      top: '-40%',
-    },
-    character8: {
-      ...commonChar,
-      left: '10%',
-      top: '-50%',
-    },
-    character9: {
-      ...commonChar,
-      left: '65%',
-      top: '5%',
-    },
-    character10: {
-      ...commonChar,
-      left: '25%',
-      top: '-5%',
-    },
-    character11: {
-      ...commonChar,
-      left: '0%',
-      top: '-65%',
-    },
-    character12: {
-      ...commonChar,
-      left: '90%',
-      top: '-75%',
-    },
-    character13: {
-      ...commonChar,
-      left: '0%',
-      top: '-65%',
-    },
-  });
-
-  const fourteenCharStyles = StyleSheet.create({
-    ...commonStyles,
-    character3: {
-      ...commonChar,
-      left: '65%',
-      top: '-15%',
-    },
-    character4: {
-      ...commonChar,
-      left: '10%',
-      top: '40%',
-    },
-    character5: {
-      ...commonChar,
-      left: '25%',
-      top: '-35%',
-    },
-    character6: {
-      ...commonChar,
-      left: '80%',
-      top: '20%',
-    },
-    character7: {
-      ...commonChar,
-      left: '80%',
-      top: '-40%',
-    },
-    character8: {
-      ...commonChar,
-      left: '10%',
-      top: '-50%',
-    },
-    character9: {
-      ...commonChar,
-      left: '65%',
-      top: '5%',
-    },
-    character10: {
-      ...commonChar,
-      left: '25%',
-      top: '-5%',
-    },
-    character11: {
-      ...commonChar,
-      left: '0%',
-      top: '-65%',
-    },
-    character12: {
-      ...commonChar,
-      left: '90%',
-      top: '-75%',
-    },
-    character13: {
-      ...commonChar,
-      left: '0%',
-      top: '-65%',
-    },
-    character14: {
-      ...commonChar,
-      left: '90%',
-      top: '-75%',
-    },
-  });
-
-  const fiveteenCharStyles = StyleSheet.create({
-    ...commonStyles,
-    character3: {
-      ...commonChar,
-      left: '65%',
-      top: '-15%',
-    },
-    character4: {
-      ...commonChar,
-      left: '10%',
-      top: '40%',
-    },
-    character5: {
-      ...commonChar,
-      left: '27%',
-      top: '-35%',
-    },
-    character6: {
-      ...commonChar,
-      left: '80%',
-      top: '20%',
-    },
-    character7: {
-      ...commonChar,
-      left: '78%',
-      top: '-42%',
-    },
-    character8: {
-      ...commonChar,
-      left: '10%',
-      top: '-52%',
-    },
-    character9: {
-      ...commonChar,
-      left: '65%',
-      top: '5%',
-    },
-    character10: {
-      ...commonChar,
-      left: '25%',
-      top: '-5%',
-    },
-    character11: {
-      ...commonChar,
-      left: '5%',
-      top: '-70%',
-    },
-    character12: {
-      ...commonChar,
-      left: '86%',
-      top: '-80%',
-    },
-    character13: {
-      ...commonChar,
-      left: '6%',
-      top: '-63%',
-    },
-    character14: {
-      ...commonChar,
-      left: '86%',
-      top: '-73%',
-    },
-    character15: {
-      ...commonChar,
-      left: '0%',
-      top: '-95%',
-    },
-  });
-
-  const sixteenCharStyles = StyleSheet.create({
-    ...commonStyles,
-    character3: {
-      ...commonChar,
-      left: '65%',
-      top: '-15%',
-    },
-    character4: {
-      ...commonChar,
-      left: '10%',
-      top: '40%',
-    },
-    character5: {
-      ...commonChar,
-      left: '27%',
-      top: '-35%',
-    },
-    character6: {
-      ...commonChar,
-      left: '80%',
-      top: '20%',
-    },
-    character7: {
-      ...commonChar,
-      left: '78%',
-      top: '-42%',
-    },
-    character8: {
-      ...commonChar,
-      left: '10%',
-      top: '-52%',
-    },
-    character9: {
-      ...commonChar,
-      left: '65%',
-      top: '5%',
-    },
-    character10: {
-      ...commonChar,
-      left: '25%',
-      top: '-5%',
-    },
-    character11: {
-      ...commonChar,
-      left: '5%',
-      top: '-70%',
-    },
-    character12: {
-      ...commonChar,
-      left: '86%',
-      top: '-80%',
-    },
-    character13: {
-      ...commonChar,
-      left: '6%',
-      top: '-63%',
-    },
-    character14: {
-      ...commonChar,
-      left: '86%',
-      top: '-73%',
-    },
-    character15: {
-      ...commonChar,
-      left: '0%',
-      top: '-95%',
-    },
-    character16: {
-      ...commonChar,
-      left: '90%',
-      top: '-105%',
-    },
-  });
-
-  const seventeenCharStyles = StyleSheet.create({
-    ...commonStyles,
-    character3: {
-      ...commonChar,
-      left: '65%',
-      top: '-15%',
-    },
-    character4: {
-      ...commonChar,
-      left: '10%',
-      top: '40%',
-    },
-    character5: {
-      ...commonChar,
-      left: '27%',
-      top: '-35%',
-    },
-    character6: {
-      ...commonChar,
-      left: '80%',
-      top: '20%',
-    },
-    character7: {
-      ...commonChar,
-      left: '78%',
-      top: '-42%',
-    },
-    character8: {
-      ...commonChar,
-      left: '10%',
-      top: '-52%',
-    },
-    character9: {
-      ...commonChar,
-      left: '65%',
-      top: '5%',
-    },
-    character10: {
-      ...commonChar,
-      left: '25%',
-      top: '-5%',
-    },
-    character11: {
-      ...commonChar,
-      left: '5%',
-      top: '-70%',
-    },
-    character12: {
-      ...commonChar,
-      left: '86%',
-      top: '-80%',
-    },
-    character13: {
-      ...commonChar,
-      left: '6%',
-      top: '-63%',
-    },
-    character14: {
-      ...commonChar,
-      left: '86%',
-      top: '-73%',
-    },
-    character15: {
-      ...commonChar,
-      left: '0%',
-      top: '-95%',
-    },
-    character16: {
-      ...commonChar,
-      left: '90%',
-      top: '-105%',
-    },
-    character17: {
-      ...commonChar,
-      left: '0%',
-      top: '-75%',
-    },
-  });
-
-  const eighteenCharStyles = StyleSheet.create({
-    ...commonStyles,
-    character3: {
-      ...commonChar,
-      left: '65%',
-      top: '-15%',
-    },
-    character4: {
-      ...commonChar,
-      left: '10%',
-      top: '40%',
-    },
-    character5: {
-      ...commonChar,
-      left: '27%',
-      top: '-35%',
-    },
-    character6: {
-      ...commonChar,
-      left: '80%',
-      top: '20%',
-    },
-    character7: {
-      ...commonChar,
-      left: '78%',
-      top: '-42%',
-    },
-    character8: {
-      ...commonChar,
-      left: '10%',
-      top: '-52%',
-    },
-    character9: {
-      ...commonChar,
-      left: '65%',
-      top: '5%',
-    },
-    character10: {
-      ...commonChar,
-      left: '25%',
-      top: '-5%',
-    },
-    character11: {
-      ...commonChar,
-      left: '5%',
-      top: '-70%',
-    },
-    character12: {
-      ...commonChar,
-      left: '86%',
-      top: '-80%',
-    },
-    character13: {
-      ...commonChar,
-      left: '6%',
-      top: '-63%',
-    },
-    character14: {
-      ...commonChar,
-      left: '86%',
-      top: '-73%',
-    },
-    character15: {
-      ...commonChar,
-      left: '0%',
-      top: '-95%',
-    },
-    character16: {
-      ...commonChar,
-      left: '90%',
-      top: '-105%',
-    },
-    character17: {
-      ...commonChar,
-      left: '0%',
-      top: '-75%',
-    },
-    character18: {
-      ...commonChar,
-      left: '90%',
-      top: '-85%',
-    },
-  });
-
-  return charDisplay(
-    state,
-    dispatch,
-    commonStyles,
-    threeCharStyles,
-    fourCharStyles,
-    fiveCharStyles,
-    sixCharStyles,
-    sevenCharStyles,
-    eightCharStyles,
-    nineCharStyles,
-    tenCharStyles,
-    elevenCharStyles,
-    twelveCharStyles,
-    thirteenCharStyles,
-    fourteenCharStyles,
-    fiveteenCharStyles,
-    sixteenCharStyles,
-    seventeenCharStyles,
-    eighteenCharStyles
-  );
-}
-
-function charDisplay(
-  state,
-  dispatch,
-  commonStyles,
-  threeCharStyles,
-  fourCharStyles,
-  fiveCharStyles,
-  sixCharStyles,
-  sevenCharStyles,
-  eightCharStyles,
-  nineCharStyles,
-  tenCharStyles,
-  elevenCharStyles,
-  twelveCharStyles,
-  thirteenCharStyles,
-  fourteenCharStyles,
-  fiveteenCharStyles,
-  sixteenCharStyles,
-  seventeenCharStyles,
-  eighteenCharStyles
-) {
+  }
+  function touchedMe(object, final) {
+    console.log(`${object} was touched!`);
+    dispatch(setAttempt(final));
+    ifCorrectWord(final);
+  }
   const { charArray } = state;
   const prevAttempt = state.attempt;
+  const width = Dimensions.get('window').width;
+  const height = Dimensions.get('window').height;
 
-  const charatersCount = charArray.length;
-
-  const numToWord = {
-    2: 'two',
-    3: 'three',
-    4: 'four',
-    5: 'five',
-    6: 'six',
-    7: 'seven',
-    8: 'eight',
-    9: 'nine',
-    10: 'ten',
-    11: 'eleven',
-    12: 'twelve',
-    13: 'thirteen',
-    14: 'fourteen',
-    15: 'fiveteen',
-    16: 'sixteen',
-    17: 'seventeen',
-    18: 'eighteen',
-  };
-  const getStyles = {
-    twoCharStyles: commonStyles,
-    threeCharStyles,
-    fourCharStyles,
-    fiveCharStyles,
-    sixCharStyles,
-    sevenCharStyles,
-    eightCharStyles,
-    nineCharStyles,
-    tenCharStyles,
-    elevenCharStyles,
-    twelveCharStyles,
-    thirteenCharStyles,
-    fourteenCharStyles,
-    fiveteenCharStyles,
-    sixteenCharStyles,
-    seventeenCharStyles,
-    eighteenCharStyles,
-  };
-  const totalCharInWord = numToWord[charatersCount];
-  let styleSheet = `${totalCharInWord}CharStyles`; // a string name of styleSheet
-  styleSheet = getStyles[styleSheet]; // the actual styleSheet object
-
-  const getStylesAttributes = {
-    character1: styleSheet.character1,
-    character2: styleSheet.character2,
-    character3: styleSheet.character3,
-    character4: styleSheet.character4,
-    character5: styleSheet.character5,
-    character6: styleSheet.character6,
-    character7: styleSheet.character7,
-    character8: styleSheet.character8,
-    character9: styleSheet.character9,
-    character10: styleSheet.character10,
-    character11: styleSheet.character11,
-    character12: styleSheet.character12,
-    character13: styleSheet.character13,
-    character14: styleSheet.character14,
-    character15: styleSheet.character15,
-    character16: styleSheet.character16,
-    character17: styleSheet.character17,
-    character18: styleSheet.character18,
-  };
+  const styles = StyleSheet.create({
+    lettersCircle: {
+      height: 300,
+      width: '100%',
+    },
+    clearBox: {
+      width: 0.12*width,
+      height: 0.12*width,
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    characterText: {
+      paddingBottom: 5,
+      fontSize: state.romanised ? 22.5 : 30,
+      color: state.darkMode ? 'darkblue' : '#FF7E00',
+      textAlign: 'center',
+    },
+    commonChar: {
+      position: 'absolute',
+      width: 0.12*width,
+      height: 0.12*width,
+      backgroundColor: state.darkMode ? '#FF7E00' : '#274C7C',
+      elevation: 5,
+      borderRadius: 25,
+      justifyContent: 'center',
+    }
+  });
 
   const ifCorrectWord = (word) => {
     if (word === state.firstWord.engText && state.topWord === '') {
@@ -943,13 +93,34 @@ function charDisplay(
       }
     }
   };
+  const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
+  let angle = 0;
 
+  const radius =  110;
+  const step = (2 * Math.PI) / charArray.length;
+  const new_height = height/(Math.floor(height/100)-1);
+  const sub = (width>400)? 1.7 : .75;
+  const new_width = width/(Math.floor(width/100)-sub);
+  //  const colorCombos = [['#E233FF', '#FF6B00'],
+  // ['#FF0076', '#590FB7'], ['#ffc500', '#c21500'], ['#182848', '#4b6cb7'],
+  // ['#e43a15', '#e65245'], ['#480048', '#c04848'], ['#dc2424', '#4a569d'], ['#4776e6', '#8e54e9'],
+  // ['#16222a', '#3a6073'], ['#ff8008', '#ffc837'], ['#eb3349', '#f45c43'], ['#aa076b', '#61045f'],
+  // ['#ff512f', '#dd2476'], ['#e55d87', '#5fc3e4'], ['#c31432', '#240b36']];
+  // const colorRandom = Math.floor(Math.random() * colorCombos.length);
+  // const [colorCenter] = useState(colorCombos[colorRandom]);;
   return (
-    <View style={styleSheet.lettersCircle}>
-      {charArray.map((char) => {
-        const charNum = `character${(charArray.indexOf(char) + 1).toString()}`;
+    <AnimatedLinearGradient
+      colors={['transparent', 'transparent']}
+      style={styles.lettersCircle}
+    >
+      {
+      charArray.map((char) => {
+        const x = Math.round(new_width + radius * Math.cos(angle));
+        const y = Math.round(new_height + radius * Math.sin(angle));
+        console.log("height: %d, width: %d, x %d, y %d", new_height, new_width, x, y)
         // let theLetter = String.fromCharCode(char);
-        const theLetter = Anvaad.unicode(char);
+        const theLetter = gurmukhi(char);
+        angle += step;
         return (
           <TouchableOpacity
             onPress={() => {
@@ -969,19 +140,60 @@ function charDisplay(
               } else {
                 final = prevAttempt + char;
               }
-              dispatch(setAttempt(final));
-              ifCorrectWord(final);
+              touchedMe(char, final);
             }}
             key={char}
-            style={getStylesAttributes[charNum]}
+            style={{
+              ...styles.commonChar,
+              left: x,
+              top: y,
+            }}
           >
-            <Text key={char} style={styleSheet.characterText}>
+            <Text key={char} style={styles.characterText}>
               {theLetter}
             </Text>
           </TouchableOpacity>
         );
-      })}
-    </View>
+      })
+}
+      {(state.attempt == "") ? <View></View> :
+      <TouchableOpacity
+        style={{
+          backgroundColor: state.darkMode ? 'black' : 'white',
+          borderRadius: 25,
+          height: 40,
+          width: 40,
+          alignSelf: 'center',
+          top: new_height,
+          elevation: 5
+        }}
+        onPress={() => {
+          dispatch(setAttempt(''));
+        }}
+      >
+        <MaskedView
+          style={{
+            height: 50,
+            width: 50
+          }}
+          maskElement={(
+            <View
+              style={{
+                backgroundColor: 'transparent',
+                padding: 5
+              }}
+            >
+              <IconM name="reload" size={30} color="black" style={styles.clearBox} />
+            </View>
+        )}
+        >
+          <LinearGradient
+            colors={state.darkMode ? ['#ff8008', '#ffc837'] : ['#FF0076', '#590FB7']}
+            style={{ flex: 1 }}
+          />
+        </MaskedView>
+      </TouchableOpacity>}
+    </AnimatedLinearGradient>
   );
 }
 
